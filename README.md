@@ -1,6 +1,6 @@
 # dailymile Objective-C Style Guide
 
-The style guide was originally forked from [The New York Times' guide](https://github.com/NYTimes/objetive-c-style-guide). Thanks to the [previous contributors](https://github.com/NYTimes/objective-c-style-guide/contributors) for the great starting point.
+The style guide was originally forked from [The New York Times' Objective-C Style Guide](https://github.com/NYTimes/objetive-c-style-guide). Thanks to the [previous contributors](https://github.com/NYTimes/objective-c-style-guide/contributors) for the great starting point.
 
 ## Introduction
 
@@ -22,7 +22,7 @@ Here are some of the documents from Apple that informed the style guide. If some
   * [Private Methods](#private-methods)
 * [Variables](#variables)
 * [Naming](#naming)
-* [Comments](#comments)
+* [Comments and Documentation](#comments-and-documentation)
 * [Init & Dealloc](#init-and-dealloc)
 * [Literals](#literals)
 * [CGRect Functions](#cgrect-functions)
@@ -56,7 +56,7 @@ UIApplication.sharedApplication.delegate;
 ## Spacing
 
 * Indent using 2 spaces. Never indent with tabs. Be sure to set this preference in Xcode.
-* Method braces and other braces (`if`/`else`/`switch`/`while` etc.) always open on the same line as the statement but close on a new line except in the case of `else`.
+* Method braces and other braces (`if`/`else`/`switch`/`while`/`for` etc.) always open on the same line as the statement but close on a new line except in the case of `else`.
 
 **Example:**
 ```objc
@@ -158,7 +158,7 @@ Property definitions should be used in place of naked instance variables wheneve
 **Example:**
 
 ```objc
-@interface NYTSection: NSObject
+@interface DMSSection: NSObject
 
 @property (nonatomic) NSString *headline;
 
@@ -168,7 +168,7 @@ Property definitions should be used in place of naked instance variables wheneve
 **Not:**
 
 ```objc
-@interface NYTSection : NSObject {
+@interface DMSSection : NSObject {
   NSString *headline;
 }
 ```
@@ -191,12 +191,12 @@ UIButton *settingsButton;
 UIButton *setBut;
 ```
 
-A three letter prefix (e.g. `NYT`) should always be used for class names and constants, however may be omitted for Core Data entity names and when only used within an implementation. Constants should be camel-case with all words capitalized and prefixed by the related class name for clarity.
+A three letter prefix of `DMS` should always be used for class names and constants, however may be omitted for Core Data entity names and when only used within an implementation. Constants should be camel-case with all words capitalized, prefixed by a lowercase `k` and include the related class name for clarity.
 
 **Example:**
 
 ```objc
-static const NSTimeInterval NYTArticleViewControllerNavigationFadeAnimationDuration = 0.3;
+static const NSTimeInterval DMSArticleViewControllerNavigationFadeAnimationDuration = 0.3;
 ```
 
 **Not:**
@@ -221,11 +221,17 @@ Instance variables should be camel-case with the leading word being lowercase, a
 id varnm;
 ```
 
-## Comments
+---
+
+If you do need to declare an instance variable, you should prefix it with an underscore as in the case of private methods.
+
+## Comments and Documentation
 
 When they are needed, comments should be used to explain **why** a particular piece of code does something. Any comments that are used must be kept up-to-date or deleted.
 
 Block comments should generally be avoided, as code should be as self-documenting as possible, with only the need for intermittent, few-line explanations. This does not apply to those comments used to generate documentation.
+
+Always group methods into functional groups using `#pragma mark -` as a separator. All delegate methods and protocol implementations should be categorized this way as well as View Lifecycle, etc.
 
 ## init and dealloc
 
@@ -351,9 +357,9 @@ When using `enum`s, it is recommended to use the new fixed underlying type speci
 **Example:**
 
 ```objc
-typedef NS_ENUM(NSInteger, NYTAdRequestState) {
-  NYTAdRequestStateInactive,
-  NYTAdRequestStateLoading
+typedef NS_ENUM(NSInteger, DMSAdRequestState) {
+  DMSAdRequestStateInactive,
+  DMSAdRequestStateLoading
 };
 ```
 
@@ -379,12 +385,12 @@ Any custom getter or setter methods should be placed at the top of the implement
 
 ### Private Properties
 
-Private properties should be declared in class extensions (anonymous categories) in the implementation file of a class. Named categories (such as `NYTPrivate` or `private`) should never be used unless extending another class.
+Private properties should be declared in class extensions (anonymous categories) in the implementation file of a class. Named categories (such as `DMSPrivate` or `private`) should never be used unless extending another class.
 
 **Example:**
 
 ```objc
-@interface NYTAdvertisement ()
+@interface DMSAdvertisement ()
 
 @property (nonatomic, strong) GADBannerView *googleAdView;
 @property (nonatomic, strong) ADBannerView *iAdView;
@@ -456,6 +462,8 @@ Singleton objects should use a thread-safe pattern for creating their shared ins
 This will prevent [possible and sometimes prolific crashes](http://cocoasamurai.blogspot.com/2011/04/singletons-your-doing-them-wrong.html).
 
 ## Categories
+
+Categories should be create for specific functionality rather than including all extensions to a Class in the same category. If you need private methods for a category, then create a category using the same name, but appended with `+Private`, eg `@interface NSDate (TimeExtensions+Private)`.
 
 Any methods added in a named category should use a the namespace as a prefix to them.
 
