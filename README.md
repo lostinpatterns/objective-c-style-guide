@@ -154,26 +154,6 @@ Variables should be named as descriptively as possible. Single letter variable n
 
 Asterisks indicating pointers belong with the variable, e.g., `NSString *text` not `NSString* text` or `NSString * text`, except in the case of constants.
 
-Property definitions should be used in place of naked instance variables whenever possible. Direct instance variable access should be avoided except in initializer methods (`init`, `initWithCoder:`, etc…), `dealloc` methods and within custom setters and getters. For more information on using Accessor Methods in Initializer Methods and dealloc, see [here](https://developer.apple.com/library/mac/documentation/Cocoa/Conceptual/MemoryMgmt/Articles/mmPractical.html#//apple_ref/doc/uid/TP40004447-SW6).
-
-**Example:**
-
-```objc
-@interface DMSSection: NSObject
-
-@property (nonatomic) NSString *headline;
-
-@end
-```
-
-**Not:**
-
-```objc
-@interface DMSSection : NSObject {
-  NSString *headline;
-}
-```
-
 ## Naming
 
 Apple naming conventions should be adhered to wherever possible, especially those related to [memory management rules](https://developer.apple.com/library/mac/#documentation/Cocoa/Conceptual/MemoryMgmt/Articles/MemoryMgmt.html) ([NARC](http://stackoverflow.com/a/2865194/340508)).
@@ -366,7 +346,29 @@ typedef NS_ENUM(NSInteger, DMSAdRequestState) {
 
 ## Properties
 
-As noted in the [Variables section](#variables), properties are always preferred to instance variables. All properties should be synthesized in the implementation with an instance variable that is prepended with an underscore.
+Property definitions should be used in place of naked instance variables whenever possible. Direct instance variable access should be avoided except in initializer methods (`init`, `initWithCoder:`, etc…), `dealloc` methods and within custom setters and getters, properties should always be accessed using `self` in order to call the accessor and setter methods. For more information on using Accessor Methods in Initializer Methods and dealloc, see [here](https://developer.apple.com/library/mac/documentation/Cocoa/Conceptual/MemoryMgmt/Articles/mmPractical.html#//apple_ref/doc/uid/TP40004447-SW6).
+
+**Example:**
+
+```objc
+@interface DMSSection ()
+
+@property (nonatomic) NSString *headline;
+
+@end
+```
+
+**Not:**
+
+```objc
+@implementation DMSSection : NSObject {
+  NSString *headline;
+}
+```
+
+---
+
+Properties should always be synthesized in the implementation with an instance variable that is prepended with an underscore.
 
 **Example:**
 
@@ -374,7 +376,7 @@ As noted in the [Variables section](#variables), properties are always preferred
 @synthesize buttonView = _buttonView;
 ```
 
-Always access properties using `self` rather than the instance variable in order to call the accessor and setter methods.
+---
 
 Property attributes should always be declared, even the default values to make them explicit, and in this specific order:
 
