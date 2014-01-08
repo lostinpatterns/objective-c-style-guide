@@ -75,19 +75,20 @@ Conditional bodies should always use braces even when a conditional body could b
 
 **Example:**
 ```objc
-if (!error) {
-  return success;
+if(!showAll) {
+  descriptions = Underscore.head(descriptions, 2);
 }
 ```
 
 **Not:**
 ```objc
-if (!error)
-  return success;
+if(!showAll)
+  descriptions = Underscore.head(descriptions, 2);
 ```
 
-or
+The only exception to this rule is when you're returning from a method, it is acceptable to use a one-liner:
 
+**Example:**
 ```objc
 if (!error) return success;
 ```
