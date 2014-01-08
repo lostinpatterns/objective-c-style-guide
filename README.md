@@ -19,6 +19,7 @@ Here are some of the documents from Apple that informed the style guide. If some
   * [Ternary Operator](#ternary-operator)
 * [Error handling](#error-handling)
 * [Methods](#methods)
+  * [Private Methods](#private-methods)
 * [Variables](#variables)
 * [Naming](#naming)
 * [Comments](#comments)
@@ -27,17 +28,20 @@ Here are some of the documents from Apple that informed the style guide. If some
 * [CGRect Functions](#cgrect-functions)
 * [Constants](#constants)
 * [Enumerated Types](#enumerated-types)
-* [Private Properties](#private-properties)
-* [Image Naming](#image-naming)
+* [Properties](#properties)
+  * [Private Properties](#private-properties)
 * [Booleans](#booleans)
 * [Singletons](#singletons)
+* [Categories](#categories)
+* [Blocks](#blocks)
+* [Subclassing UIView](#subclassing-uiview)
 * [Xcode Project](#xcode-project)
 
 ## Dot-Notation Syntax
 
 Dot-notation should **always** be used for accessing and mutating properties. Bracket notation is preferred in all other instances.
 
-**For example:**
+**Example:**
 ```objc
 view.backgroundColor = [UIColor orangeColor];
 [UIApplication sharedApplication].delegate;
@@ -51,15 +55,14 @@ UIApplication.sharedApplication.delegate;
 
 ## Spacing
 
-* Indent using 4 spaces. Never indent with tabs. Be sure to set this preference in Xcode.
-* Method braces and other braces (`if`/`else`/`switch`/`while` etc.) always open on the same line as the statement but close on a new line.
+* Indent using 2 spaces. Never indent with tabs. Be sure to set this preference in Xcode.
+* Method braces and other braces (`if`/`else`/`switch`/`while` etc.) always open on the same line as the statement but close on a new line except in the case of `else`.
 
-**For example:**
+**Example:**
 ```objc
 if (user.isHappy) {
 //Do something
-}
-else {
+} else {
 //Do something else
 }
 ```
@@ -70,17 +73,17 @@ else {
 
 Conditional bodies should always use braces even when a conditional body could be written without braces (e.g., it is one line only) to prevent [errors](https://github.com/NYTimes/objective-c-style-guide/issues/26#issuecomment-22074256). These errors include adding a second line and expecting it to be part of the if-statement. Another, [even more dangerous defect](http://programmers.stackexchange.com/a/16530) may happen where the line "inside" the if-statement is commented out, and the next line unwittingly becomes part of the if-statement. In addition, this style is more consistent with all other conditionals, and therefore more easily scannable.
 
-**For example:**
+**Example:**
 ```objc
 if (!error) {
-    return success;
+  return success;
 }
 ```
 
 **Not:**
 ```objc
 if (!error)
-    return success;
+  return success;
 ```
 
 or
@@ -93,7 +96,7 @@ if (!error) return success;
 
 The Ternary operator, ? , should only be used when it increases clarity or code neatness. A single condition is usually all that should be evaluated. Evaluating multiple conditions is usually more understandable as an if statement, or refactored into instance variables.
 
-**For example:**
+**Example:**
 ```objc
 result = a > b ? x : y;
 ```
@@ -107,11 +110,11 @@ result = a > b ? x = c > d ? c : d : y;
 
 When methods return an error parameter by reference, switch on the returned value, not the error variable.
 
-**For example:**
+**Example:**
 ```objc
 NSError *error;
 if (![self trySomethingWithError:&error]) {
-    // Handle Error
+  // Handle Error
 }
 ```
 
@@ -120,7 +123,7 @@ if (![self trySomethingWithError:&error]) {
 NSError *error;
 [self trySomethingWithError:&error];
 if (error) {
-    // Handle Error
+  // Handle Error
 }
 ```
 
@@ -130,10 +133,20 @@ Some of Apple’s APIs write garbage values to the error parameter (if non-NULL)
 
 In method signatures, there should be a space after the scope (-/+ symbol). There should be a space between the method segments.
 
-**For Example**:
+**Example**:
 ```objc
 - (void)setExampleText:(NSString *)text image:(UIImage *)image;
 ```
+
+### Private Methods
+
+Private methods signatures should always begin with an underscore.
+
+**Example**:
+```objc
+- (void)_setExampleText:(NSString *)text image:(UIImage *)image;
+```
+
 ## Variables
 
 Variables should be named as descriptively as possible. Single letter variable names should be avoided except in `for()` loops.
@@ -142,7 +155,7 @@ Asterisks indicating pointers belong with the variable, e.g., `NSString *text` n
 
 Property definitions should be used in place of naked instance variables whenever possible. Direct instance variable access should be avoided except in initializer methods (`init`, `initWithCoder:`, etc…), `dealloc` methods and within custom setters and getters. For more information on using Accessor Methods in Initializer Methods and dealloc, see [here](https://developer.apple.com/library/mac/documentation/Cocoa/Conceptual/MemoryMgmt/Articles/mmPractical.html#//apple_ref/doc/uid/TP40004447-SW6).
 
-**For example:**
+**Example:**
 
 ```objc
 @interface NYTSection: NSObject
@@ -156,7 +169,7 @@ Property definitions should be used in place of naked instance variables wheneve
 
 ```objc
 @interface NYTSection : NSObject {
-    NSString *headline;
+  NSString *headline;
 }
 ```
 
@@ -166,7 +179,7 @@ Apple naming conventions should be adhered to wherever possible, especially thos
 
 Long, descriptive method and variable names are good.
 
-**For example:**
+**Example:**
 
 ```objc
 UIButton *settingsButton;
@@ -178,9 +191,9 @@ UIButton *settingsButton;
 UIButton *setBut;
 ```
 
-A three letter prefix (e.g. `NYT`) should always be used for class names and constants, however may be omitted for Core Data entity names. Constants should be camel-case with all words capitalized and prefixed by the related class name for clarity.
+A three letter prefix (e.g. `NYT`) should always be used for class names and constants, however may be omitted for Core Data entity names and when only used within an implementation. Constants should be camel-case with all words capitalized and prefixed by the related class name for clarity.
 
-**For example:**
+**Example:**
 
 ```objc
 static const NSTimeInterval NYTArticleViewControllerNavigationFadeAnimationDuration = 0.3;
@@ -196,7 +209,7 @@ Properties and local variables should be camel-case with the leading word being 
 
 Instance variables should be camel-case with the leading word being lowercase, and should be prefixed with an underscore. This is consistent with instance variables synthesized automatically by LLVM. **If LLVM can synthesize the variable automatically, then let it.**
 
-**For example:**
+**Example:**
 
 ```objc
 @synthesize descriptiveVariableName = _descriptiveVariableName;
@@ -222,20 +235,36 @@ Block comments should generally be avoided, as code should be as self-documentin
 
 ```objc
 - (instancetype)init {
-    self = [super init]; // or call the designated initalizer
-    if (self) {
-        // Custom initialization
-    }
+  self = [super init]; // or call the designated initalizer
+  if (self) {
+    // Custom initialization
+  }
 
-    return self;
+  return self;
 }
 ```
+
+When allocating a new object, always use `new` in place of `alloc` and `init`. This is simply a matter of being terse.
+
+**Example:**
+
+```objc
+DMSActivity *activity = [DMSActivity new];
+```
+
+**Not:**
+
+```objc
+DMSActivity *activity = [[DMSActivity alloc] init];
+```
+
+Custom init methods, singletons, or any method that returns an instance of the class should use the return type of `instancetype` rather than `id`.
 
 ## Literals
 
 `NSString`, `NSDictionary`, `NSArray`, and `NSNumber` literals should be used whenever creating immutable instances of those objects. Pay special care that `nil` values not be passed into `NSArray` and `NSDictionary` literals, as this will cause a crash.
 
-**For example:**
+**Example:**
 
 ```objc
 NSArray *names = @[@"Brian", @"Matt", @"Chris", @"Alex", @"Steve", @"Paul"];
@@ -259,7 +288,7 @@ When accessing the `x`, `y`, `width`, or `height` of a `CGRect`, always use the 
 
 > All functions described in this reference that take CGRect data structures as inputs implicitly standardize those rectangles before calculating their results. For this reason, your applications should avoid directly reading and writing the data stored in the CGRect data structure. Instead, use the functions described here to manipulate rectangles and to retrieve their characteristics.
 
-**For example:**
+**Example:**
 
 ```objc
 CGRect frame = self.view.frame;
@@ -283,14 +312,14 @@ CGFloat height = frame.size.height;
 
 ## Constants
 
-Constants are preferred over in-line string literals or numbers, as they allow for easy reproduction of commonly used variables and can be quickly changed without the need for find and replace. Constants should be declared as `static` constants and not `#define`s unless explicitly being used as a macro.
+Constants are preferred over in-line string literals or numbers, as they allow for easy reproduction of commonly used variables and can be quickly changed without the need for find and replace. Constants should be declared as `static` constants and not `#define`s unless explicitly being used as a macro. You should always prepend the constant variable name with `k`.
 
-**For example:**
+**Example:**
 
 ```objc
-static NSString * const NYTAboutViewControllerCompanyName = @"The New York Times Company";
+static NSString * const kAboutViewControllerCompanyName = @"The New York Times Company";
 
-static const CGFloat NYTImageThumbnailHeight = 50.0;
+static const CGFloat kImageThumbnailHeight = 50.0;
 ```
 
 **Not:**
@@ -301,6 +330,20 @@ static const CGFloat NYTImageThumbnailHeight = 50.0;
 #define thumbnailHeight 2
 ```
 
+---
+
+You only need to add the namespace to a constant that is made public. For example, constants used within an implementation should follow this pattern:
+
+`static NSString * const kShowProfileSegueIdentifier = @"showProfile";`
+
+Constants exposed externally should use this pattern in the interface:
+
+`extern NSString *const kDMSAnalyticsCreatedEntry;`
+
+and this pattern in the implementation file:
+
+`NSString * const kDMSAnalyticsCreatedEntry = @"createdEntry";`
+
 ## Enumerated Types
 
 When using `enum`s, it is recommended to use the new fixed underlying type specification because it has stronger type checking and code completion. The SDK now includes a macro to facilitate and encourage use of fixed underlying types — `NS_ENUM()`
@@ -309,16 +352,36 @@ When using `enum`s, it is recommended to use the new fixed underlying type speci
 
 ```objc
 typedef NS_ENUM(NSInteger, NYTAdRequestState) {
-    NYTAdRequestStateInactive,
-    NYTAdRequestStateLoading
+  NYTAdRequestStateInactive,
+  NYTAdRequestStateLoading
 };
 ```
 
-## Private Properties
+## Properties
+
+As noted in the [Variables section](#variables), properties are always preferred to instance variables. All properties should be synthesized in the implementation with an instance variable that is prepended with an underscore.
+
+**Example:**
+
+```objc
+@synthesize buttonView = _buttonView;
+```
+
+Always access properties using `self` rather than the instance variable in order to call the accessor and setter methods.
+
+Property attributes should always be declared, even the default values to make them explicit, and in this specific order:
+
+```objc
+@property (nonatomic, strong, readonly) DMSActivity *activity;
+```
+
+Any custom getter or setter methods should be placed at the top of the implementation file, just below the `@synthesize` statements, and above any `init` or `dealloc` methods.
+
+### Private Properties
 
 Private properties should be declared in class extensions (anonymous categories) in the implementation file of a class. Named categories (such as `NYTPrivate` or `private`) should never be used unless extending another class.
 
-**For example:**
+**Example:**
 
 ```objc
 @interface NYTAdvertisement ()
@@ -330,24 +393,13 @@ Private properties should be declared in class extensions (anonymous categories)
 @end
 ```
 
-## Image Naming
-
-Image names should be named consistently to preserve organization and developer sanity. They should be named as one camel case string with a description of their purpose, followed by the un-prefixed name of the class or property they are customizing (if there is one), followed by a further description of color and/or placement, and finally their state.
-
-**For example:**
-
-* `RefreshBarButtonItem` / `RefreshBarButtonItem@2x` and `RefreshBarButtonItemSelected` / `RefreshBarButtonItemSelected@2x`
-* `ArticleNavigationBarWhite` / `ArticleNavigationBarWhite@2x` and `ArticleNavigationBarBlackSelected` / `ArticleNavigationBarBlackSelected@2x`.
-
-Images that are used for a similar purpose should be grouped in respective groups in an Images folder.
-
 ## Booleans
 
 Since `nil` resolves to `NO` it is unnecessary to compare it in conditions. Never compare something directly to `YES`, because `YES` is defined to 1 and a `BOOL` can be up to 8 bits.
 
 This allows for more consistency across files and greater visual clarity.
 
-**For example:**
+**Example:**
 
 ```objc
 if (!someObject) {
@@ -391,17 +443,115 @@ Text and example taken from the [Cocoa Naming Guidelines](https://developer.appl
 Singleton objects should use a thread-safe pattern for creating their shared instance.
 ```objc
 + (instancetype)sharedInstance {
-   static id sharedInstance = nil;
+  static id sharedInstance = nil;
 
-   static dispatch_once_t onceToken;
-   dispatch_once(&onceToken, ^{
-      sharedInstance = [[self alloc] init];
-   });
+  static dispatch_once_t onceToken;
+  dispatch_once(&onceToken, ^{
+    sharedInstance = [[self alloc] init];
+  });
 
-   return sharedInstance;
+  return sharedInstance;
 }
 ```
 This will prevent [possible and sometimes prolific crashes](http://cocoasamurai.blogspot.com/2011/04/singletons-your-doing-them-wrong.html).
+
+## Categories
+
+Any methods added in a named category should use a the namespace as a prefix to them.
+
+**Example:**
+
+```objc
+@interface NSDate (TimeExtensions)
+- (NSString *)dms_timeAgoShort;
+@end
+```
+
+**Not:**
+
+```objc
+@interface NSDate (TimeExtensions)
+- (NSString *)timeAgoShort;
+@end
+```
+
+## Blocks
+
+It's important that you don't get into a retain cycle when using blocks and asynchronous dispatch. Always set a `weak` reference to any variable referenced within a block. If you have multiple statements that use that variable within the block, you must make a `strong` reference to it from within the block in the case that it becomes `nil` after the first one.
+
+**Example:**
+
+```objc
+__weak __typeof(self)weakSelf = self;
+[self.view mas_makeConstraints:^(MASConstraintMaker *make) {
+  make.edges.equalTo(weakSelf);
+}];
+```
+
+**Not:**
+
+```objc
+[self.mapView mas_makeConstraints:^(MASConstraintMaker *make) {
+  make.edges.equalTo(self);
+}];
+```
+
+-----
+
+**Example with multiple statements:**
+
+```objc
+__weak __typeof(self)weakSelf = self;
+[self.titleLabel mas_makeConstraints:^(MASConstraintMaker *make) {
+  __strong __typeof(weakSelf)strongSelf = weakSelf;
+  
+  make.top.equalTo(strongSelf);
+  make.left.equalTo(strongSelf);
+  make.right.equalTo(strongSelf);
+}];
+```
+
+**Not:**
+
+```objc
+__weak __typeof(self)weakSelf = self;
+[self.titleLabel mas_makeConstraints:^(MASConstraintMaker *make) {
+  make.top.equalTo(weakSelf);
+  make.left.equalTo(weakSelf);
+  make.right.equalTo(weakSelf);
+}];
+```
+
+-----
+
+You should add these two lines as snippets to Xcode and always use them exactly like this:
+
+```objc
+__weak __typeof(self)weakSelf = self;
+__strong __typeof(weakSelf)strongSelf = weakSelf;
+```
+
+You should read Apple's notes on this [here](https://developer.apple.com/library/mac/releasenotes/ObjectiveC/RN-TransitioningToARC/Introduction/Introduction.html#//apple_ref/doc/uid/TP40011226-CH1-SW9).
+
+## Sublcassing UIView
+
+You should always use auto-layout wherever possible. The `init` methods of a UIView should only contain a call to `[self _setupView]` in their implementation.
+
+**Example:**
+
+```objc
+- (id)initWithFrame:(CGRect)frame {
+  self = [super initWithFrame:frame];
+  if(self) {
+    [self _setupView];
+  }
+  return self;
+}
+```
+
+Your `_setupView` method should call an `_applyConstraints` method at the bottom to set up any constraints it needs for the view.
+
+You should use the setter methods for any properties that change how your view is displayed to update it before calling `setNeedsUpdateConstraints` or `setNeedsLayout` as necessary.
 
 ## Xcode project
 
